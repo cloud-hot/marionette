@@ -162,7 +162,7 @@ Possibly many, please create issues. I am sure both server and clients can be op
 
 ### Author
 
-Vigith Maurice & Ops Team
+[Vigith Maurice](https://github.com/vigith) & Ops Team
 
 ### marionette ??
 
