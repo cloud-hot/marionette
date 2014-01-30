@@ -89,6 +89,8 @@ Once you call execute, 4 instance variables are set which can be accessed via ob
   - _errcode_  err code
   - _runtime_  time required by execute function
 
+**NOTE:** the _result_ variable will contain the data written to both stdout and stderr of the spawned command (if you don't want this, use a wrapper script which will redirect stderr appropriately and give path to wrapper script in the whitelist file)
+
 ```
 obj = Marionette(...)
 err = obj.execute(cmd_name, args...)
