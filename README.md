@@ -145,7 +145,7 @@ There are many open source remote execution frameworks available, among them mos
 The reasons we developed this were due to
 
   - lightweight (for us who uses flavours of AMZ instance types felt SALT is heavy on low end instances)
-  - we wanted the flexibility to any code on the remote box and there should be whitelisting of commands on the remote end (cmd.run of salt was too much for us)
+  - we wanted the flexibility to any binary on the remote box and there should be whitelisting of commands on the remote end (cmd.run of salt was too much for us)
   - setuid and setguid on remote command
   - simple for the users (no zmq, simple server client design)
   - decentralization of server
