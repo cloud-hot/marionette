@@ -1,7 +1,7 @@
 marionette
 ==========
 
-A remote execution framework using libuv
+A simple remote execution framework using libuv.
 
 # Description
 
@@ -55,7 +55,7 @@ To whitelist a command, you have to create whitelist files. The whitelist files 
 
 ### Whitelisting Commands
 
-A command is accepted by server if there is a file with the name of the command dropped in _/etc/marionette_ ie, to have a a command *foo* to be whitelisted you have to create a file _foo_ in _/etc/marionette_
+A command is accepted by server if there is a file with the name of the command dropped in _/etc/marionette_ ie, to have a command *foo* to be whitelisted you have to create a file _foo_ in _/etc/marionette_
 
 Following is how a whitelist file will look like
 
@@ -69,7 +69,7 @@ Following is how a whitelist file will look like
 }
 ```
 
-  - **command** is the path to command that has to be executed
+  - **command** is the path to binary (/bin/ls, etc) that has to be executed
   - **runas_user** is the user as whom the command will be executed
   - **runas_group** group whom the command will be executed as (NOT MANDATORY)
   - **argc** is number of arguments to the command, if there is a mismatch the command won't be executed
@@ -83,7 +83,7 @@ These commands are executed upon request from the clients.
 
 The language specific documentation is available with the client and we plead you to read it to know all the options. The basic usage pattern is create an object and call execute on that object by passing command name and args. When object goes out of scope the socket is closed. 
 
-Once you call execute 4 instance variables are set which can be accessed via obj.var
+Once you call execute, 4 instance variables are set which can be accessed via obj.var
   - _result_   result string from marionette server
   - _errmsg_   err message
   - _errcode_  err code
@@ -115,7 +115,7 @@ We include pod with the Perl Marionette package. ```perldoc Marionette``` will f
 
 ### Python
 
-We include docstring with the Python Marionette module. ```import Marionette;help(Marionette)``` to get the doc.
+We include docstring with the Python Marionette module. ```import Marionette; help(Marionette)``` to get the doc.
 
 ```python
         import Marionette
@@ -140,13 +140,32 @@ the whitelist for test.echo is in ```/etc/marionette/test/echo``` and content is
 
 # Other Remote Execution Framework v/s Marionette
 
-There are many open source remote execution frameworks available outside, among them most famous is SALT. This is not a replacement for any of those. The reasons we developed this was due it
+There are many open source remote execution frameworks available, among them most famous is [SALT][http://www.saltstack.com/]. Marionette is NOT a replacement for any of those. This is something that works good for us.
 
+The reasons we developed this were due to
+
+  - lightweight (for us who uses flavours of AMZ instance types felt SALT is heavy on low end instances)
+  - we wanted the flexibility to any code on the remote box and there should be whitelisting of commands on the remote end (cmd.run of salt was too much for us)
+  - setuid and setguid on remote command
+  - simple for the users (no zmq, simple server client design)
+  - decentralization of server
+  - streaming output to the client
+  - language agnostic (salt has too much dependency on python)
+  - awesomeness of libuv
+
+[SALT][http://www.saltstack.com/] and other frameworks are awesome, they have myriad of features.
+  
 # Miscellaneous
 
 ## Bugs
-Possibly Many, please create issues
+Possibly Many, please create issues. I am sure this code can be optimized a lot. Patches, pull requests and issues are most welcome.
 
 ## Author
 
-Vigith Maurice & Ops
+Vigith Maurice & Ops Team
+
+## What does marionette mean?
+
+'a puppet worked from above by strings attached to its limbs' coined by [dandixw][https://github.com/dandixw]
+
+ 
