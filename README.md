@@ -157,15 +157,15 @@ The reasons we developed this were due to
   
 # Miscellaneous
 
-## Bugs
-Possibly Many, please create issues. I am sure both server and clients can be optimized a lot. Patches, pull requests, suggestions and issues are most welcome.
+### Bugs
+Possibly many, please create issues. I am sure both server and clients can be optimized a lot. Patches, pull requests, suggestions and issues are most welcome.
 
-## Author
+### Author
 
 Vigith Maurice & Ops Team
 
-## What does marionette mean?
+### marionette ??
 
-'a puppet worked from above by strings attached to its limbs' coined by [dandixw](https://github.com/dandixw)
+'a puppet worked from above by strings attached to its limbs' christened by [dandixw](https://github.com/dandixw)
 
  
