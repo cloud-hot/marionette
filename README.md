@@ -140,7 +140,7 @@ the whitelist for test.echo is in ```/etc/marionette/test/echo``` and content is
 
 # Other Remote Execution Framework v/s Marionette
 
-There are many open source remote execution frameworks available, among them most famous is [SALT][http://www.saltstack.com/]. Marionette is NOT a replacement for any of those. This is something that works good for us.
+There are many open source remote execution frameworks available, among them most famous is [SALT](http://www.saltstack.com/). Marionette is NOT a replacement for any of those. This is something that works good for us.
 
 The reasons we developed this were due to
 
@@ -153,12 +153,12 @@ The reasons we developed this were due to
   - language agnostic (salt has too much dependency on python)
   - awesomeness of libuv
 
-[SALT][http://www.saltstack.com/] and other frameworks are awesome, they have myriad of features.
+[SALT](http://www.saltstack.com/) and other frameworks are awesome, they have myriad of features.
   
 # Miscellaneous
 
 ## Bugs
-Possibly Many, please create issues. I am sure this code can be optimized a lot. Patches, pull requests and issues are most welcome.
+Possibly Many, please create issues. I am sure both server and clients can be optimized a lot. Patches, pull requests, suggestions and issues are most welcome.
 
 ## Author
 
@@ -166,6 +166,6 @@ Vigith Maurice & Ops Team
 
 ## What does marionette mean?
 
-'a puppet worked from above by strings attached to its limbs' coined by [dandixw][https://github.com/dandixw]
+'a puppet worked from above by strings attached to its limbs' coined by [dandixw](https://github.com/dandixw)
 
  
