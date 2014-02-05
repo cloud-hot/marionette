@@ -77,6 +77,7 @@ typedef struct {
 typedef struct {
   int req_cnt;			/* request count */
   char *ip;			/* client name */
+  /* TODO: Add more? */
 } client_ctx;
 
 /* incoming request data and contexts per execute request */
@@ -84,13 +85,13 @@ typedef struct {
   uv_write_t req;
   uv_buf_t buf;			/* data pointer of request */
   uv_buf_t result;		/* result of the processing (created by processing function) */
-  char **arg_v;
-  int arg_c;
+  char **arg_v;			/* user arguments */
+  int arg_c;			/* arg count */
   client_ctx * c_ctx;
   child_worker *worker;
 } write_req_t;
 
-/* contenxt of sub process */
+/* context of sub process */
 typedef struct {
   write_req_t * w_req;
   uv_stream_t * client;
@@ -100,7 +101,7 @@ typedef struct {
 /* FUNCTION DEFINITIONS */
 /************************/
 
-/* each function is documented in the function definition */
+/* each function is documented in the function declaration */
 
 /* marionette.c */
 void process_data(uv_stream_t *, ssize_t, uv_buf_t);
