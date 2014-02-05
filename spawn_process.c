@@ -9,7 +9,8 @@ void on_child_exit(uv_process_t *req, int exit_status, int term_signal) {
 
   /* if is closing */
   if (uv_is_closing((uv_handle_t *)p_ctx->client)) {
-    _LOGGER("(ERROR) CLIENT Has Gone Away! [uv_is_closing set to 1] Process exited with status %d, signal %d (%s) [Bug in the Client]", exit_status, term_signal);
+    _LOGGER("(ERROR) CLIENT Has Gone Away! [uv_is_closing set to 1] Process exited with status %d, signal %d [Bug in the Client]", exit_status, term_signal);
+    write_cb(&p_ctx->w_req->req, 0);
     goto end;
   }
 
