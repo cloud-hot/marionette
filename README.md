@@ -122,9 +122,14 @@ We include docstring with the Python Marionette module. ```import Marionette; he
 ```python
         import Marionette
         
-        mc = Marionette.Client(host => "127.0.0.1")
-        
-        err_code = mc.execute("test.echo", "-n", "foo")
+        mc = Marionette.Client(host="127.0.0.1")
+
+        try:
+          mc.execute("test.echo", "-n", "foo")
+        except Marionette.MarionetteError as e:
+          print e
+        else:
+          print mc.result
 ```
 
 ### Example whitelist file for _test.echo_
