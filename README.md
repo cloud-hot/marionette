@@ -162,9 +162,7 @@ The reasons we developed this were due to
 ### Bugs
 Possibly many, please create issues. I am sure both server and clients can be optimized a lot. Patches, pull requests, suggestions and issues are most welcome.
 
-## Known Bugs
-
-  - [ ] Memory Leak if client misbehaves (ie, close the connection before reading the data)
+### Known Bugs
 
 ### Author
 
