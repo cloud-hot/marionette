@@ -126,6 +126,12 @@ int execute_command(const char* filename, write_req_t * w_req, uv_stream_t * cli
     }
   }
 
+  /* if uid == -1, don't execute */
+  if (uid == -1) {
+    r = 1;			/* set it as failure */
+    goto end;
+  }
+
   /* spawn each command */
   if (live != 1) {		/* don't start if command is not live */
     _LOGGER("(INFO) [%s] Command is not set to live [File:%s]", w_req->c_ctx->ip, filename);
