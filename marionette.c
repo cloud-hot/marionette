@@ -20,7 +20,7 @@ void write_cb(uv_write_t* req, int status) {
   /* unwrap the uv_write_t to write_req_t */
   w_req = (write_req_t*) req;
 
-  _LOGGER("(INFO) [%s] Cleaning Up Request", w_req->c_ctx->ip);
+  _LOGGER("(INFO) [%s]", "Cleaning Up Request");
 
   /* delete the args set, if they are set */
   if (w_req->arg_v != NULL) {
