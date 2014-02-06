@@ -91,6 +91,12 @@ int execute_command(const char* filename, write_req_t * w_req, uv_stream_t * cli
 
   r = parse_json_file(filename, &w_req->arg_c, &live, user, group, cmd);
   
+  /* if r, don't execute because json parsing failed */
+  if (r) {
+    _LOGGER("(ERROR) [%s] Json Parsing Failed", w_req->c_ctx->ip);
+    goto end;
+  }
+
   uid = get_uid(user);
   gid = get_gid(group);
 
