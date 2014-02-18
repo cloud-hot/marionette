@@ -40,9 +40,6 @@ void write_cb(uv_write_t* req, int status) {
   if (status == 0)
     return;
 
-  /* if error */
-  _LOGGER("uv_write error: %s\n", uv_strerror(uv_last_error(loop)));
-
   /* lets close/shutdown because status != 0 */
   shut_req = (uv_shutdown_t*) malloc(sizeof(uv_shutdown_t));
   uv_shutdown(shut_req, (uv_stream_t*)req->handle, shutdown_cb);  // uv_stream_t is a subclass of uv_handle_t
@@ -53,7 +50,7 @@ void write_cb(uv_write_t* req, int status) {
   return;
 }
 
-void read_cb(uv_stream_t * stream, ssize_t nread, uv_buf_t buf) {
+void read_cb(uv_stream_t * stream, ssize_t nread, const uv_buf_t * buf) {
   uv_shutdown_t * shut_req;		/* Shutdown the outgoing (write) side of a duplex stream. */
 
   /* lets shutdown the connection, we are not happy either way w.r.t data size */
@@ -64,8 +61,8 @@ void read_cb(uv_stream_t * stream, ssize_t nread, uv_buf_t buf) {
       _LOGGER("(INFO) Closing Connection with Client [%s]", ((client_ctx *)stream->data)->ip, nread);
     }
     /* free the buffer */
-    if (buf.base) {
-      free(buf.base);
+    if (buf->base) {
+      free(buf->base);
     }
 
     /* shutdown the write */
@@ -78,7 +75,7 @@ void read_cb(uv_stream_t * stream, ssize_t nread, uv_buf_t buf) {
   /* incase no data was send, we are totally OK with it */
   if (nread == 0) {
     /* Everything OK, but nothing read. */
-    free(buf.base);
+    free(buf->base);
     return;
   }
 
@@ -90,7 +87,7 @@ void read_cb(uv_stream_t * stream, ssize_t nread, uv_buf_t buf) {
   return;
 }
 
-void process_data(uv_stream_t * stream, ssize_t nread, uv_buf_t buf) {
+void process_data(uv_stream_t * stream, ssize_t nread, const uv_buf_t * buf) {
   int r;			/* return */
   write_req_t * w_req;
   struct sockaddr_in addr;	/* get client name */
@@ -101,7 +98,7 @@ void process_data(uv_stream_t * stream, ssize_t nread, uv_buf_t buf) {
   /* lets make a copy of what is read */
   w_req = (write_req_t *)malloc(sizeof(write_req_t));
   w_req->buf = uv_buf_init((char*) malloc(nread), nread+1); /* buffer */
-  memcpy(w_req->buf.base, buf.base, nread);
+  memcpy(w_req->buf.base, buf->base, nread);
   w_req->buf.base[nread] = '\0'; /* we don't send \0 */
 
   /* have the write point to the client context */
@@ -117,7 +114,7 @@ void process_data(uv_stream_t * stream, ssize_t nread, uv_buf_t buf) {
   bzero(w_req->worker, sizeof(child_worker)); /* we need to set options to NULL and then start adding as per reqmnt */
 
   /* clear the read buffer */
-  free(buf.base);
+  free(buf->base);
 
   //  process the request
   process_error = process_request(w_req, stream);
@@ -129,8 +126,10 @@ void process_data(uv_stream_t * stream, ssize_t nread, uv_buf_t buf) {
 }
 
 /* allocate_buffer */
-uv_buf_t alloc_buffer(uv_handle_t * handle, size_t size) {
-  return uv_buf_init(malloc(size), size);
+void alloc_buffer(uv_handle_t * handle, size_t suggested_size, uv_buf_t* buf) {
+  buf->base = malloc(suggested_size);
+  buf->len = suggested_size;
+  return;
 }
 
 /* - accept the connection
@@ -147,7 +146,7 @@ void connection_cb(uv_stream_t * server, int status) {
 
   /* check for listen status on whether we can accept */
   if (status == -1) {
-    _LOGGER("(ERROR) Listen Error : %s", uv_strerror(uv_last_error(loop)));
+    _LOGGER("(ERROR) %s","Listen Error");
     return;
   }
 
@@ -158,7 +157,7 @@ void connection_cb(uv_stream_t * server, int status) {
   /* initialize the new client */
   r = uv_tcp_init(loop, client);
   if (r) {
-    _LOGGER("(ERROR) TCP Init Error : %s", uv_strerror(uv_last_error(loop)));
+    _LOGGER("(ERROR) TCP Init Error : %s", uv_strerror(r));
     free(client);
     return;
   }
@@ -168,7 +167,7 @@ void connection_cb(uv_stream_t * server, int status) {
   if (r) {
     /* lets close the client stream, we got an error */
     uv_close((uv_handle_t *) client, NULL);
-    _LOGGER("(ERROR) TCP Bind Error : %s", uv_strerror(uv_last_error(loop)));
+    _LOGGER("(ERROR) TCP Bind Error : %s", uv_strerror(r));
   } else {			/* if bind is SUCCESSFUL */
     /* lets store the client ctx */
     client->data = (client_ctx *)malloc(sizeof(client_ctx));
@@ -186,7 +185,7 @@ void connection_cb(uv_stream_t * server, int status) {
     r = uv_read_start((uv_stream_t *) client, alloc_buffer, read_cb);
     if (r) {
       uv_close((uv_handle_t *) client, NULL);
-      _LOGGER("(ERROR) Read_Start Error : %s", uv_strerror(uv_last_error(loop)));
+      _LOGGER("(ERROR) Read_Start Error : %s", uv_strerror(r));
     }
   }
 
@@ -201,11 +200,11 @@ void connection_cb(uv_stream_t * server, int status) {
  */
 int start_marionette(void) {
   int r;			/* return */
-
+  struct sockaddr_in ip4addr;
   loop = uv_default_loop();	/* we use the default loop */
 
   /* convert human readable port and ip to struct */
-  struct sockaddr_in addr = uv_ip4_addr(SERVER, PORT);
+  uv_ip4_addr(SERVER, PORT, &ip4addr);
 
   /* initialize the tcp server */
   r = uv_tcp_init(loop, &server);
@@ -213,14 +212,14 @@ int start_marionette(void) {
     FATAL("%s", "Socket Creation Error");
 
   /* bind the server to the address */
-  r = uv_tcp_bind(&server, addr);
+  r = uv_tcp_bind(&server, (struct sockaddr*)&ip4addr, 0);
   if (r) 
     FATAL("%s", "Bind Error");
 
   /* listen to the port */
   r = uv_listen((uv_stream_t *) &server, SOMAXCONN, connection_cb);
   if (r)
-    FATAL("%s", uv_strerror(uv_last_error(loop)));
+    FATAL("%s", uv_strerror(r));
 
   _LOGGER("(INFO) Marionette Server Started (Port:%d) (Listen:%s) (Conf Dir:%s)", PORT, SERVER, MARIONETTE_DIR);
   /* execute all tasks in queue */

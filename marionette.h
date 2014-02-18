@@ -104,12 +104,12 @@ typedef struct {
 /* each function is documented in the function declaration */
 
 /* marionette.c */
-void process_data(uv_stream_t *, ssize_t, uv_buf_t);
+void process_data(uv_stream_t *, ssize_t, const uv_buf_t *);
 void close_cb(uv_handle_t *);
 void shutdown_cb(uv_shutdown_t * , int );
 void write_cb(uv_write_t* , int );
-void read_cb(uv_stream_t * , ssize_t, uv_buf_t);
-uv_buf_t alloc_buffer(uv_handle_t *, size_t);
+void read_cb(uv_stream_t * , ssize_t, const uv_buf_t *);
+void alloc_buffer(uv_handle_t *, size_t, uv_buf_t*);
 void connection_cb(uv_stream_t *, int);
 
 /* request.c */
@@ -129,4 +129,4 @@ int get_gid(const char *);
 
 /* spawn_process.c */
 int spawn_command(uv_stream_t *, write_req_t *, int , int , int , char *);
-void on_child_exit(uv_process_t *, int, int);
+void on_child_exit(uv_process_t *, int64_t, int);

@@ -1,6 +1,6 @@
 #include "marionette.h"
 
-void on_child_exit(uv_process_t *req, int exit_status, int term_signal) {
+void on_child_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
   uv_buf_t a;
   int i = 0;
   process_req_ctx *p_ctx;
@@ -34,7 +34,7 @@ void on_child_exit(uv_process_t *req, int exit_status, int term_signal) {
 
 int spawn_command(uv_stream_t *client, write_req_t *w_req, int live, int uid, int gid, char *command) {
   process_req_ctx *p_ctx; /* we need to store to wrap the request to notify the client on worse failures */
-  int i;
+  int i, err;
 
   p_ctx = (process_req_ctx *)malloc(sizeof(process_req_ctx));
 
@@ -73,8 +73,8 @@ int spawn_command(uv_stream_t *client, write_req_t *w_req, int live, int uid, in
 
   w_req->worker->process.data = (void *) p_ctx;
 
-  if (uv_spawn(loop, &w_req->worker->process, w_req->worker->options)) {
-    _LOGGER("(ERROR) uv_spawn (%s)", uv_strerror(uv_last_error(loop)));
+  if (err = uv_spawn(loop, &w_req->worker->process, &w_req->worker->options) < 0) {
+    _LOGGER("(ERROR) uv_spawn (%s)", uv_strerror(err));
     return 1;
   }
 
