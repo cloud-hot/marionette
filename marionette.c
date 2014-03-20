@@ -27,6 +27,7 @@ void write_cb(uv_write_t* req, int status) {
     for (i=0; i<w_req->arg_c+2; i++) {
       free(w_req->arg_v[i]);
     }
+    free(w_req->arg_v);
   }
 
   /* Free the read/write buffer and the request */
