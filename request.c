@@ -90,7 +90,7 @@ int execute_command(const char* filename, write_req_t * w_req, uv_stream_t * cli
   char *dangers = DANGEROUS;
 
   r = parse_json_file(filename, &w_req->arg_c, &live, user, group, cmd);
-  
+
   /* if r, don't execute because json parsing failed */
   if (r) {
     _LOGGER("(ERROR) [%s] Json Parsing Failed", w_req->c_ctx->ip);
@@ -105,7 +105,6 @@ int execute_command(const char* filename, write_req_t * w_req, uv_stream_t * cli
   for (i=0; i<w_req->arg_c+2; i++) {
     w_req->arg_v[i] = NULL;
   }
-
 
   /* arg_v[0] should be the command */
   w_req->arg_v[0] = malloc(sizeof(char) * strlen(cmd));
@@ -235,7 +234,12 @@ int process_request(write_req_t * w_req, uv_stream_t * client) {
     memcpy(w_req->result.base, START_DONUT_BAKING, STATUS_LEN); /* add start message */
     strcpy(w_req->result.base + STATUS_LEN, "iamok");		/* after we add start msg, we have moved STATUS_LEN ahead */
     memcpy(w_req->result.base + 5 + STATUS_LEN, END_DONUT_BAKING, STATUS_LEN); /* start msg+iamok */
-    uv_write(&w_req->req, client, &w_req->result, 1, write_cb);
+    if (uv_is_closing((uv_handle_t *)client)) {
+      _LOGGER("(ERROR) CLIENT Has Gone Away! [uv_is_closing set to 1]) [Intended Msg: %s]", "iamok");
+      write_cb(&w_req->req, 0);
+    } else {
+      uv_write(&w_req->req, client, &w_req->result, 1, write_cb);
+    }
   } else if (is_custom_command(w_req->buf.base, filename)) { 
     _LOGGER("(INFO) [%s] File Found [%s]", w_req->c_ctx->ip, filename);
     /* set aside the space for status */
@@ -250,7 +254,12 @@ int process_request(write_req_t * w_req, uv_stream_t * client) {
     _LOGGER("(ERROR) [%s] Request: [%s] neither a custom nor default command", w_req->c_ctx->ip, w_req->buf.base);
     w_req->result = uv_buf_init((char *)malloc(STATUS_SIZE), STATUS_LEN);
     memcpy(w_req->result.base, NO_DONUT_FOR_YOU, STATUS_LEN);
-    uv_write(&w_req->req, client, &w_req->result, 1, write_cb);
+    if (uv_is_closing((uv_handle_t *)client)) {
+      _LOGGER("(ERROR) CLIENT Has Gone Away! [uv_is_closing set to 1]) [Intended Msg: %s]", NO_DONUT_FOR_YOU);
+      write_cb(&w_req->req, 0);
+    } else {
+      uv_write(&w_req->req, client, &w_req->result, 1, write_cb);
+    }
   }
 
   return error;
