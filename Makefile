@@ -1,4 +1,4 @@
-LDFLAGS = -luv -ljson
+LDFLAGS = -luv -ljson -ljson-c
 
 EXEC = marionette
 
