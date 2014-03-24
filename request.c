@@ -76,9 +76,9 @@ int is_custom_command(const char *msg, char *filename) {
  */
 int execute_command(const char* filename, write_req_t * w_req, uv_stream_t * client) {
   int live = 1;			/* is the command active */
-  char user[10] = {'\0'};	/* username */
+  char user[10]  = {'\0'};	/* username */
   char group[10] = {'\0'};	/* groupname */
-  char cmd[30]	= {'\0'};	/* command name */
+  char cmd[128]	 = {'\0'};	/* command name */
   char **arg_v;			/* arguments */
 
   int uid;			/* userid */
