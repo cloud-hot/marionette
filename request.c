@@ -26,8 +26,8 @@ int is_default_command(const char *msg, const char *command) {
 int is_custom_command(const char *msg, char *filename) {
   char *ptr;		/* position holder */
   struct stat s;	/* for stat call */
-  char _msg[30];	/* store the msg name */
-  bzero(_msg, 30);	/* might miss a pointer arithematic somewhere and get garbage :-) */
+  char _msg[128];	/* store the msg name */
+  bzero(_msg, 128);	/* might miss a pointer arithematic somewhere and get garbage :-) */
   
   /* check for ^e */
   ptr = strchr(msg, 5);
