@@ -101,7 +101,7 @@ void process_data(uv_stream_t * stream, ssize_t nread, uv_buf_t buf) {
 
   /* lets make a copy of what is read */
   w_req = (write_req_t *)malloc(sizeof(write_req_t));
-  w_req->buf = uv_buf_init((char*) malloc(nread), nread+1); /* buffer */
+  w_req->buf = uv_buf_init((char*) malloc(nread+1), nread+1); /* buffer */
   memcpy(w_req->buf.base, buf.base, nread);
   w_req->buf.base[nread] = '\0'; /* we don't send \0 */
 

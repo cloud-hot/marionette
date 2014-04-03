@@ -144,8 +144,12 @@ int execute_command(const char* filename, write_req_t * w_req, uv_stream_t * cli
   } else {
     /* write 200 before you spawn */
     memcpy(w_req->result.base, START_DONUT_BAKING, STATUS_LEN);
-    uv_write(&w_req->req, client, &w_req->result, 1, NULL);
-    spawn_command(client, w_req, live, uid, gid, cmd);
+    if (uv_is_closing((uv_handle_t *)client)) {
+      _LOGGER("(ERROR) %s","CLIENT Has Gone Away! [uv_is_closing set to 1] [Bug in the Client] (Just about to Spawn)");
+    } else {
+      uv_write(&w_req->req, client, &w_req->result, 1, NULL);
+      spawn_command(client, w_req, live, uid, gid, cmd);
+    }
   }
 
  end:

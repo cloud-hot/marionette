@@ -78,7 +78,7 @@ int parse_json_file(const char *filename, int *arg_c, int *live, char *user, cha
     return 1;
   }
 
-  r = read(fd, json_str, FILE_SIZE);
+  r = read(fd, json_str, FILE_SIZE); /* i should use stat to see file size, this is a possible overflow */
   if (r <= 0 || r >= FILE_SIZE) {
     _LOGGER("File size for file (%s) unexpected expected size (Expected Size:%d)", filename, FILE_SIZE);
     return 1;

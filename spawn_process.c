@@ -22,12 +22,14 @@ void on_child_exit(uv_process_t *req, int exit_status, int term_signal) {
   } else {
     memcpy(a.base, END_DONUT_BAKING, STATUS_LEN);
   }
+
   uv_write(&p_ctx->w_req->req, p_ctx->client, &a, 1, write_cb);
+
+  uv_close((uv_handle_t*) req, NULL);
 
  end:
   free(a.base);
   free(p_ctx);
-  uv_close((uv_handle_t*) req, NULL);
 
   return;
 }
